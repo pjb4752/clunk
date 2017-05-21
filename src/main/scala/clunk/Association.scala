@@ -1,4 +1,4 @@
 package clunk
 
-class Association[A](val left: Table[_], val right: Table[_],
-  val fk: Column[A], val pk: Column[A])
+class Association[+A <: Table[_], B <: Table[_], C](val left: A, val right: B,
+  val fk: Column[C], val pk: Column[C])

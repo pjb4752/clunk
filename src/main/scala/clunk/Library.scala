@@ -24,15 +24,19 @@ object Library extends App {
   val users = UserTable
   val roles = RoleTable
 
-  // these do not compile
-  // val sql = Query(UserTable).filter(_.fooBar.isEqualTo(1)).toSql
-  // val sql = Query(UserTable).filter(_.id.isEqualTo("something")).toSql
-  val sql = Query(UserTable).
-    filter(_.id.isEqualTo(1)).
-    filter(_.name.isEqualTo("Pat")).
+  val userSql = Query(users).
+    innerJoin(_.roles).
+    filter({ case (u, r) => u.id.isEqualTo(1) }).
+    filter({ case (u, r) => u.name.isEqualTo("Pat") }).
     toSql
 
-  // SELECT `id`, `name`, `role_id` FROM `users` WHERE `id` = 1
-  println(sql)
+  println(userSql)
 
+  val roleSql = Query(roles).
+    innerJoin(_.user).
+    filter({ case (r, u) => r.name.isEqualTo("admin") }).
+    toSql
+
+  println(roleSql)
 }
+

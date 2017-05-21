@@ -21,7 +21,15 @@ object Ast {
       val column: Column[A],
       val value: A)
 
-    case class SelectNode(val columns: Seq[Column[_]]) extends Node
-    case class WhereNode(val comparisons: Seq[Comparison[_]]) extends Node
+    case class TableSelectNode(
+      val table: Table[_],
+      val columns: Seq[Column[_]]) extends Node
+
+    case class TableWhereNode(
+      val table: Table[_],
+      val comparisons: Seq[Comparison[_]]) extends Node
+
+    case class SelectNode(val tableSelects: Seq[TableSelectNode]) extends Node
+    case class WhereNode(val tableFilters: Seq[TableWhereNode]) extends Node
   }
 }
