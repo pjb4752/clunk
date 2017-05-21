@@ -5,36 +5,33 @@ import clunk.Ast.Node.Comparator._
 import clunk.TypeTag._
 
 class SqlBuilder(table: String, select: SelectNode, where: Option[WhereNode]) {
-  val builder = new StringBuilder()
 
   def toSql() = {
-    buildSelect(builder)
-    buildFrom(builder)
-    buildWhere(builder)
-
-    builder.toString()
+    (buildSelect _).
+      andThen(buildFrom).
+      andThen(buildWhere)(new StringBuilder).
+      toString
   }
 
-  private def buildSelect(builder: StringBuilder): Unit = {
-    builder.append("SELECT ")
-    select.columns.map({ c => s"`${c.srcName}`" }).addString(builder, ", ")
-  }
+  private def buildSelect(builder: StringBuilder) =
+    select.columns.map({ c => s"`${c.srcName}`" }).
+      addString(builder, "SELECT ", ", ", "")
 
-  private def buildFrom(builder: StringBuilder): Unit = {
+  private def buildFrom(builder: StringBuilder) =
     builder.append(s" FROM `${table}`")
-  }
 
-  private def buildWhere(builder: StringBuilder): Unit = {
-    where.map(_.comparisons).map({ cmps =>
-      cmps.map({ c =>
-        builder.append(" WHERE ")
+  private def buildWhere(builder: StringBuilder) = {
+    def buildComparisons(comparisons: Seq[Comparison[_]]) = {
+      comparisons.map({ c =>
         c.comparator match {
           case EqualTo => buildComparison("=", c.column, c.value)
           case LessThan => buildComparison("<", c.column, c.value)
           case MoreThan => buildComparison(">", c.column, c.value)
         }
-      }).addString(builder, " AND ")
-    }).getOrElse("")
+      }).addString(builder, " WHERE ", " AND ", "")
+    }
+
+    where.map(_.comparisons).map(buildComparisons(_)).getOrElse(builder)
   }
 
   private def buildComparison(op: String, c: Column[_], v: Any) = {

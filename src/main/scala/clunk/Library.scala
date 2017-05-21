@@ -27,7 +27,10 @@ object Library extends App {
   // these do not compile
   // val sql = Query(UserTable).filter(_.fooBar.isEqualTo(1)).toSql
   // val sql = Query(UserTable).filter(_.id.isEqualTo("something")).toSql
-  val sql = Query(UserTable).filter(_.id.isEqualTo(1)).toSql
+  val sql = Query(UserTable).
+    filter(_.id.isEqualTo(1)).
+    filter(_.name.isEqualTo("Pat")).
+    toSql
 
   // SELECT `id`, `name`, `role_id` FROM `users` WHERE `id` = 1
   println(sql)
