@@ -2,6 +2,7 @@ package clunk
 
 import clunk.Ast.Node._
 import clunk.Ast.Node.Comparator._
+import clunk.jdbc.Database
 import clunk.sql.QueryBuilder
 
 class Query[A <: Table[_]](
@@ -24,6 +25,13 @@ class Query[A <: Table[_]](
   }
 
   def toSql() = new QueryBuilder(select, join, where).toSql
+
+  def result = {
+    val sql = new QueryBuilder(select, join, where).toSql
+    val rs = Database.connection.execute(sql)
+
+    source.fromDb(rs)
+  }
 }
 
 class Query2[A <: Table[_], B <: Table[_]](
@@ -48,6 +56,11 @@ class Query2[A <: Table[_], B <: Table[_]](
   }
 
   def toSql() = new QueryBuilder(select, join, where).toSql
+
+  def result = {
+    val sql = new QueryBuilder(select, join, where).toSql
+    Database.connection.execute(sql)
+  }
 }
 
 class Query3[A <: Table[_], B <: Table[_], C <: Table[_]](
@@ -62,6 +75,11 @@ class Query3[A <: Table[_], B <: Table[_], C <: Table[_]](
   }
 
   def toSql() = new QueryBuilder(select, join, where).toSql
+
+  def result = {
+    val sql = new QueryBuilder(select, join, where).toSql
+    Database.connection.execute(sql)
+  }
 }
 
 object Query {

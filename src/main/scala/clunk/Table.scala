@@ -3,7 +3,7 @@ package clunk
 import scala.collection.mutable.ArrayBuffer
 import clunk.Ast.Node._
 
-class Table[A](val srcName: String) extends TableLike[A] {
+abstract class Table[A](val srcName: String) extends TableLike[A] {
   type Self = this.type
 
   val columns = ArrayBuffer[Column[_]]()

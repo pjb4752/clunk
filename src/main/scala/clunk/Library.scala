@@ -1,10 +1,11 @@
 package clunk
 
 import clunk.Builder._
+import clunk.jdbc.Database
 
 object Library extends App {
-  case class User(id: Int, name: String, roleId: Int)
-  case class Role(id: Int, name: String)
+  case class User(id: Int, name: String, addressId: Int)
+  case class Role(id: Int, name: String, userId: Int)
   case class Address(id: Int, street: String, city: String, state: String)
 
   object UserTable extends Table[User]("users") {
@@ -14,15 +15,18 @@ object Library extends App {
 
     val roles = oneToMany(RoleTable, id, RoleTable.userId)
     val address = oneToOne(AddressTable, addressId, AddressTable.id)
+
+    val conversions = mapping((id, name, addressId), User.tupled)
   }
 
   object RoleTable extends Table[Role]("roles") {
     val id = column[Int]("id")
     val name = column[String]("name")
     val userId = column[Int]("user_id")
-    val addressId = column[Int]("address_id")
 
     val user = manyToOne(UserTable, UserTable.id, userId)
+
+    val conversions = mapping((id, name, userId), Role.tupled)
   }
 
   object AddressTable extends Table[Address]("addresses") {
@@ -32,16 +36,20 @@ object Library extends App {
     val state = column[String]("state")
 
     val user = oneToOne(UserTable, UserTable.addressId, id)
+
+    val conversions = mapping((id, street, city, state), Address.tupled)
   }
 
-  val userSql = Query(UserTable).
-    innerJoin(_.roles).
-    innerJoin({ case (u, r) => u.address }).
-    filter({ case (u, r, a) => u.name.isEqualTo("Pat") }).
-    filter({ case (u, r, a) => r.name.isEqualTo("admin") }).
-    filter({ case (u, r, a) => a.state.isEqualTo("Ohio") }).
-    toSql
+  Database.init()
 
-  println(userSql)
+  val query = Query(UserTable)
+    //innerJoin(_.roles).
+    //innerJoin({ case (u, r) => u.address }).
+    //filter({ case (u, r) => u.name.isEqualTo("Pat") }).
+    //filter({ case (u, r) => r.name.isEqualTo("admin") })
+    //filter({ case (u, r, a) => a.state.isEqualTo("PA") })
+
+  println(query.toSql)
+  println(query.result)
 }
 
