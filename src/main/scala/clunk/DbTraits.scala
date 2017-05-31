@@ -21,58 +21,48 @@ trait Taggable {
 trait ColumnLike[A] extends Nameable with Taggable
 
 trait Convertible[A] {
-  def fromDb(rs: ResultSet): List[A]
+  val arity: Int
+  def fromDb(rs: ResultSet, offset: Int): A
 }
 
 class Converter2[B, C, A](val t: Tuple2[B, C] => A) extends Convertible[A] {
-  def fromDb(rs: ResultSet) = {
-    var result = List[A]()
-
-    while (rs.next()) {
-      val tuple = Tuple2[B, C](
-        rs.getObject(1).asInstanceOf[B],
-        rs.getObject(2).asInstanceOf[C]
-      )
-      result = t(tuple) :: result
-    }
-    result
+  val arity = 2
+  def fromDb(rs: ResultSet, offset: Int) = {
+    val tuple = Tuple2[B, C](
+      rs.getObject(offset + 1).asInstanceOf[B],
+      rs.getObject(offset + 2).asInstanceOf[C]
+    )
+    t(tuple)
   }
 }
 
 class Converter3[B, C, D, A](val t: Tuple3[B, C, D] => A) extends Convertible[A] {
-  def fromDb(rs: ResultSet) = {
-    var result = List[A]()
-
-    while (rs.next()) {
-      val tuple = Tuple3[B, C, D](
-        rs.getObject(1).asInstanceOf[B],
-        rs.getObject(2).asInstanceOf[C],
-        rs.getObject(3).asInstanceOf[D]
-      )
-      result = t(tuple) :: result
-    }
-    result
+  val arity = 3
+  def fromDb(rs: ResultSet, offset: Int) = {
+    val tuple = Tuple3[B, C, D](
+      rs.getObject(offset + 1).asInstanceOf[B],
+      rs.getObject(offset + 2).asInstanceOf[C],
+      rs.getObject(offset + 3).asInstanceOf[D]
+    )
+    t(tuple)
   }
 }
 
 class Converter4[B, C, D, E, A](val t: Tuple4[B, C, D, E] => A) extends Convertible[A] {
-  def fromDb(rs: ResultSet) = {
-    var result = List[A]()
-
-    while (rs.next()) {
-      val tuple = Tuple4[B, C, D, E](
-        rs.getObject(1).asInstanceOf[B],
-        rs.getObject(2).asInstanceOf[C],
-        rs.getObject(3).asInstanceOf[D],
-        rs.getObject(4).asInstanceOf[E]
-      )
-      result = t(tuple) :: result
-    }
-    result
+  val arity = 4
+  def fromDb(rs: ResultSet, offset: Int) = {
+    val tuple = Tuple4[B, C, D, E](
+      rs.getObject(offset + 1).asInstanceOf[B],
+      rs.getObject(offset + 2).asInstanceOf[C],
+      rs.getObject(offset + 3).asInstanceOf[D],
+      rs.getObject(offset + 4).asInstanceOf[E]
+    )
+    t(tuple)
   }
 }
 
 trait TableLike[A] extends Nameable {
+  type M = A
   val conversions: Convertible[A]
 
   def mapping[B, C](c: Tuple2[Column[B], Column[C]], t: Tuple2[B, C] => A) =
@@ -84,5 +74,6 @@ trait TableLike[A] extends Nameable {
   def mapping[B, C, D, E](c: Tuple4[Column[B], Column[C], Column[D], Column[E]], t: Tuple4[B, C, D, E] => A) =
     new Converter4[B, C, D, E, A](t)
 
-  def fromDb(rs: ResultSet) = conversions.fromDb(rs)
+  def fromDb(rs: ResultSet, offset: Int = 0) = conversions.fromDb(rs, offset)
+  def arity = conversions.arity
 }

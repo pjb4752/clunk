@@ -7,7 +7,7 @@ class QueryBuilder(
   join: Option[JoinNode],
   where: Option[WhereNode]) {
 
-  val selectBuilder = new SelectBuilder(select)
+  val selectBuilder = new SelectBuilder(select, join)
   val joinBuilder = new JoinBuilder(join)
   val whereBuilder = new WhereBuilder(where)
 

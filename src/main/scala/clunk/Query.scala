@@ -59,7 +59,9 @@ class Query2[A <: Table[_], B <: Table[_]](
 
   def result = {
     val sql = new QueryBuilder(select, join, where).toSql
-    Database.connection.execute(sql)
+    val rs = Database.connection.execute(sql)
+
+    new DbConverter[A, B](rs, source).convert
   }
 }
 
