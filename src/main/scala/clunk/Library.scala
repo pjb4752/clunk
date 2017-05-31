@@ -56,16 +56,13 @@ object Library extends App {
       Address.tupled)
   }
 
-  Database.init()
-
   val query = Query(UserTable).
     innerJoin(_.roles).
-    //innerJoin({ case (u, r) => u.address }).
-    filter({ case (u, r) => u.name.isEqualTo("Pat") }).
-    filter({ case (u, r) => r.name.isEqualTo("admin") })
-    //filter({ case (u, r, a) => a.state.isEqualTo("PA") })
+    innerJoin({ case (u, r) => u.address }).
+    filter({ case (u, r, a) => u.name.isEqualTo("Pat") }).
+    filter({ case (u, r, a) => r.name.isEqualTo("admin") }).
+    filter({ case (u, r, a) => a.state.isEqualTo("PA") })
 
   println(query.toSql)
   println(query.result)
 }
-

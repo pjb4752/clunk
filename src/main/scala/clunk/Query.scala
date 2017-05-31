@@ -3,6 +3,7 @@ package clunk
 import clunk.Ast.Node._
 import clunk.Ast.Node.Comparator._
 import clunk.jdbc.Database
+import clunk.mappers._
 import clunk.sql.QueryBuilder
 
 class Query[A <: Table[_]](
@@ -30,7 +31,7 @@ class Query[A <: Table[_]](
     val sql = new QueryBuilder(select, join, where).toSql
     val rs = Database.connection.execute(sql)
 
-    source.fromDb(rs)
+    new ResultSetMapper1[A](source).map(rs)
   }
 }
 
@@ -61,7 +62,7 @@ class Query2[A <: Table[_], B <: Table[_]](
     val sql = new QueryBuilder(select, join, where).toSql
     val rs = Database.connection.execute(sql)
 
-    new DbConverter[A, B](rs, source).convert
+    new ResultSetMapper2[A, B](source).map(rs)
   }
 }
 
@@ -80,7 +81,9 @@ class Query3[A <: Table[_], B <: Table[_], C <: Table[_]](
 
   def result = {
     val sql = new QueryBuilder(select, join, where).toSql
-    Database.connection.execute(sql)
+    val rs = Database.connection.execute(sql)
+
+    new ResultSetMapper3[A, B, C](source).map(rs)
   }
 }
 

@@ -1,9 +1,11 @@
-package clunk
+package clunk.mappers
 
+import clunk.Table
 import java.sql.ResultSet
 
-class DbConverter[A <: Table[_], B <: Table[_]](val rs: ResultSet, val source: Tuple2[A, B]) {
-  def convert = {
+class ResultSetMapper2[A <: Table[_], B <: Table[_]](source: Tuple2[A, B]) {
+
+  def map(rs: ResultSet) = {
     var result = List[Tuple2[A#M, B#M]]()
 
     while (rs.next()) {
@@ -12,7 +14,6 @@ class DbConverter[A <: Table[_], B <: Table[_]](val rs: ResultSet, val source: T
 
       result = (left, right) :: result
     }
-
     result
   }
 }
