@@ -8,7 +8,7 @@ class DbConverter[A <: Table[_], B <: Table[_]](val rs: ResultSet, val source: T
 
     while (rs.next()) {
       val left = source._1.fromDb(rs)
-      val right = source._2.fromDb(rs, source._1.arity)
+      val right = source._2.fromDb(rs, source._1.projectionArity)
 
       result = (left, right) :: result
     }

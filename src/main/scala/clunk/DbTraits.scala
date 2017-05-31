@@ -23,17 +23,25 @@ trait ColumnLike[A] extends Nameable with Taggable
 
 trait TableLike[A] extends Nameable {
   type M = A
-  val conversions: Convertible[A]
 
-  def mapping[B, C](c: Tuple2[Column[B], Column[C]], t: Tuple2[B, C] => A) =
+  val converter: Convertible[A]
+
+  def projectionMapping[B, C](
+      c: Tuple2[Column[B], Column[C]],
+      t: Tuple2[B, C] => A) =
     new Converter2[B, C, A](t)
 
-  def mapping[B, C, D](c: Tuple3[Column[B], Column[C], Column[D]], t: Tuple3[B, C, D] => A) =
+  def projectionMapping[B, C, D](
+      c: Tuple3[Column[B], Column[C], Column[D]],
+      t: Tuple3[B, C, D] => A) =
     new Converter3[B, C, D, A](t)
 
-  def mapping[B, C, D, E](c: Tuple4[Column[B], Column[C], Column[D], Column[E]], t: Tuple4[B, C, D, E] => A) =
+  def projectionMapping[B, C, D, E](
+      c: Tuple4[Column[B], Column[C], Column[D], Column[E]],
+      t: Tuple4[B, C, D, E] => A) =
     new Converter4[B, C, D, E, A](t)
 
-  def fromDb(rs: ResultSet, offset: Int = 0) = conversions.fromDb(rs, offset)
-  def arity = conversions.arity
+  def projectionArity = converter.arity
+
+  def fromDb(rs: ResultSet, offset: Int = 0) = converter.fromDb(rs, offset)
 }

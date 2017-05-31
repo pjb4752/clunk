@@ -16,7 +16,12 @@ object Library extends App {
     val roles = oneToMany(RoleTable, id, RoleTable.userId)
     val address = oneToOne(AddressTable, addressId, AddressTable.id)
 
-    val conversions = mapping((id, name, addressId), User.tupled)
+    val converter = projectionMapping(
+      (
+        id,
+        name,
+        addressId),
+      User.tupled)
   }
 
   object RoleTable extends Table[Role]("roles") {
@@ -26,7 +31,12 @@ object Library extends App {
 
     val user = manyToOne(UserTable, UserTable.id, userId)
 
-    val conversions = mapping((id, name, userId), Role.tupled)
+    val converter = projectionMapping(
+      (
+        id,
+        name,
+        userId),
+      Role.tupled)
   }
 
   object AddressTable extends Table[Address]("addresses") {
@@ -37,7 +47,13 @@ object Library extends App {
 
     val user = oneToOne(UserTable, UserTable.addressId, id)
 
-    val conversions = mapping((id, street, city, state), Address.tupled)
+    val converter = projectionMapping(
+      (
+        id,
+        street,
+        city,
+        state),
+      Address.tupled)
   }
 
   Database.init()
