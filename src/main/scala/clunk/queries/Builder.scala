@@ -7,8 +7,8 @@ import clunk.Table
 
 object Builder {
 
-  def buildJoin[A <: Table[_], B <: Table[_]]
-      (oldJoin: Option[JoinNode], association: Association[A, B, _]) = {
+  def buildJoin[T1 <: Table, T2 <: Table]
+      (oldJoin: Option[JoinNode], association: Association[T1, T2, _]) = {
 
     val prevJoins = oldJoin.map(_.tableJoins).getOrElse(Seq[TableJoinNode]())
     val newJoins = prevJoins :+ TableJoinNode(association.left,

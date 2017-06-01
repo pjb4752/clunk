@@ -3,7 +3,7 @@ package clunk
 import clunk.Ast.Node._
 import clunk.Ast.Node.Comparator._
 
-class Column[A](val typeTag: TypeTag, val table: Table[_], val srcName: String)
+class Column[A](val typeTag: TypeTag, val table: Table, val srcName: String)
   extends ColumnLike[A] {
 
   def isEqualTo(value: A) = makeComparison(EqualTo, value)

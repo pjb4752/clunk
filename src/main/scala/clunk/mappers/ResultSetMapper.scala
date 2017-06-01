@@ -3,10 +3,9 @@ package clunk.mappers
 import clunk.Table
 import java.sql.ResultSet
 
-class ResultSetMapper[A <: Table[_]](source: A) {
-
+class ResultSetMapper[T1 <: Table](source: T1) {
   def map(rs: ResultSet) = {
-    var result = List[A#M]()
+    var result = List[T1#Record]()
 
     while (rs.next()) {
       val record = source.fromDb(rs)

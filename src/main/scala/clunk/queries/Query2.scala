@@ -7,19 +7,19 @@ import clunk.mappers.ResultSetMapper2
 import clunk.sql.QueryBuilder
 import clunk.Table
 
-class Query2[A <: Table[_], B <: Table[_]](
-  val source: Tuple2[A, B],
+class Query2[T1 <: Table, T2 <: Table](
+  val source: Tuple2[T1, T2],
   val select: SelectNode,
   val join: Option[JoinNode],
   val where: Option[WhereNode]) {
 
-  def filter(f: Tuple2[A, B] => Comparison[_]) = {
+  def filter(f: Tuple2[T1, T2] => Comparison[_]) = {
     val newWhere = Builder.buildWhere(where, f(source))
     new Query2(source, select, join, newWhere)
   }
 
-  def innerJoin[C <: Table[_], D <: Table[_], E]
-      (f: Tuple2[A, B] => Association[C, D, E]) = {
+  def innerJoin[T3 <: Table, T4 <: Table, A]
+      (f: Tuple2[T1, T2] => Association[T3, T4, A]) = {
 
     val association = f(source)
     val newSource = (source._1, source._2, association.right)
@@ -34,6 +34,6 @@ class Query2[A <: Table[_], B <: Table[_]](
     val sql = new QueryBuilder(select, join, where).toSql
     val rs = Database.connection.execute(sql)
 
-    new ResultSetMapper2[A, B](source).map(rs)
+    new ResultSetMapper2(source).map(rs)
   }
 }

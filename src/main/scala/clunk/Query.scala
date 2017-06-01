@@ -7,18 +7,18 @@ import clunk.mappers.ResultSetMapper
 import clunk.queries.Query2
 import clunk.sql.QueryBuilder
 
-class Query[A <: Table[_]](
-  val source: A,
+class Query[T1 <: Table](
+  val source: T1,
   val select: SelectNode,
   val join: Option[JoinNode],
   val where: Option[WhereNode]) {
 
-  def filter(f: A => Comparison[_]) = {
+  def filter(f: T1 => Comparison[_]) = {
     val newWhere = queries.Builder.buildWhere(where, f(source))
     new Query(source, select, join, newWhere)
   }
 
-  def innerJoin[B <: Table[_], C](f: A => Association[A, B, C]) = {
+  def innerJoin[T2 <: Table, A](f: T1 => Association[T1, T2, A]) = {
     val association = f(source)
     val newSource = (source, association.right)
     val newJoin = queries.Builder.buildJoin(None, association)
@@ -32,16 +32,16 @@ class Query[A <: Table[_]](
     val sql = new QueryBuilder(select, join, where).toSql
     val rs = Database.connection.execute(sql)
 
-    new ResultSetMapper[A](source).map(rs)
+    new ResultSetMapper(source).map(rs)
   }
 }
 
 object Query {
 
-  def apply[A <: Table[_]](t: A) = {
+  def apply[T1 <: Table](t: T1) = {
     val tableSelects = Seq(t.selectNode)
     val selectNode = SelectNode(tableSelects)
 
-    new Query[A](t, selectNode, None, None)
+    new Query(t, selectNode, None, None)
   }
 }

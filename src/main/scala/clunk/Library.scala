@@ -8,7 +8,9 @@ object Library extends App {
   case class Role(id: Int, name: String, userId: Int)
   case class Address(id: Int, street: String, city: String, state: String)
 
-  object UserTable extends Table[User]("users") {
+  object UserTable extends Table("users") {
+    type Record = User
+
     val id = column[Int]("id")
     val name = column[String]("name")
     val addressId = column[Int]("address_id")
@@ -24,7 +26,9 @@ object Library extends App {
       User.tupled)
   }
 
-  object RoleTable extends Table[Role]("roles") {
+  object RoleTable extends Table("roles") {
+    type Record = Role
+
     val id = column[Int]("id")
     val name = column[String]("name")
     val userId = column[Int]("user_id")
@@ -39,7 +43,9 @@ object Library extends App {
       Role.tupled)
   }
 
-  object AddressTable extends Table[Address]("addresses") {
+  object AddressTable extends Table("addresses") {
+    type Record = Address
+
     val id = column[Int]("id")
     val street = column[String]("street")
     val city = column[String]("city")
@@ -64,5 +70,6 @@ object Library extends App {
     filter({ case (u, r, a) => a.state.isEqualTo("PA") })
 
   println(query.toSql)
-  println(query.result)
+  val result: List[(User, Role, Address)] = query.result
+  println(result)
 }

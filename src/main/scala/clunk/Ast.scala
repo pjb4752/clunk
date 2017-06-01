@@ -22,17 +22,17 @@ object Ast {
       val value: A)
 
     case class TableSelectNode(
-      val table: Table[_],
+      val table: Table,
       val columns: Seq[Column[_]]) extends Node
 
     case class TableJoinNode(
-      val left: Table[_],
-      val right: Table[_],
+      val left: Table,
+      val right: Table,
       val fk: Column[_],
       val pk: Column[_])
 
     case class TableWhereNode(
-      val table: Table[_],
+      val table: Table,
       val comparisons: Seq[Comparison[_]]) extends Node
 
     case class SelectNode(val tableSelects: Seq[TableSelectNode]) extends Node

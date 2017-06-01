@@ -3,11 +3,11 @@ package clunk.mappers
 import clunk.Table
 import java.sql.ResultSet
 
-class ResultSetMapper3[A <: Table[_], B <: Table[_], C <: Table[_]]
-    (source: Tuple3[A, B, C]) {
+class ResultSetMapper3[T1 <: Table, T2 <: Table, T3 <: Table]
+    (source: Tuple3[T1, T2, T3]) {
 
   def map(rs: ResultSet) = {
-    var result = List[Tuple3[A#M, B#M, C#M]]()
+    var result = List[Tuple3[T1#Record, T2#Record, T3#Record]]()
 
     while (rs.next()) {
       var offset = 0
