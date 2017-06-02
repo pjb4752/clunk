@@ -9,13 +9,13 @@ import clunk.Table
 
 class Query3[T1 <: Table, T2 <: Table, T3 <: Table](
   val source: Tuple3[T1, T2, T3],
-  val select: SelectNode,
-  val join: Option[JoinNode],
-  val where: Option[WhereNode]) {
+  val selectNode: SelectNode,
+  val joinNode: Option[JoinNode],
+  val whereNode: Option[WhereNode]) {
 
-  def filter(f: Tuple3[T1, T2, T3] => Comparison[_]) = {
-    val newWhere = Builder.buildWhere(where, f(source))
-    new Query3(source, select, join, newWhere)
+  def where(f: Tuple3[T1, T2, T3] => Comparison[_]) = {
+    val newWhere = Builder.buildWhere(whereNode, f(source))
+    new Query3(source, selectNode, joinNode, newWhere)
   }
 
   def innerJoin[T4 <: Table, T5 <: Table, A]
@@ -23,15 +23,15 @@ class Query3[T1 <: Table, T2 <: Table, T3 <: Table](
 
     val association = f(source)
     val newSource = (source._1, source._2, source._3, association.right)
-    val newJoin = Builder.buildJoin(join, association)
+    val newJoin = Builder.buildJoin(joinNode, association)
 
-    new Query4(newSource, select, newJoin, where)
+    new Query4(newSource, selectNode, newJoin, whereNode)
   }
 
-  def toSql() = new QueryBuilder(select, join, where).toSql
+  def toSql() = new QueryBuilder(selectNode, joinNode, whereNode).toSql
 
   def result = {
-    val sql = new QueryBuilder(select, join, where).toSql
+    val sql = new QueryBuilder(selectNode, joinNode, whereNode).toSql
     val rs = Database.connection.execute(sql)
 
     Mapping.map3(source, rs)

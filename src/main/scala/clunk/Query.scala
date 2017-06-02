@@ -8,13 +8,13 @@ import clunk.sql.QueryBuilder
 
 class Query[T1 <: Table](
   val source: T1,
-  val select: SelectNode,
-  val join: Option[JoinNode],
-  val where: Option[WhereNode]) {
+  val selectNode: SelectNode,
+  val joinNode: Option[JoinNode],
+  val whereNode: Option[WhereNode]) {
 
-  def filter(f: T1 => Comparison[_]) = {
-    val newWhere = queries.Builder.buildWhere(where, f(source))
-    new Query(source, select, join, newWhere)
+  def where(f: T1 => Comparison[_]) = {
+    val newWhere = queries.Builder.buildWhere(whereNode, f(source))
+    new Query(source, selectNode, joinNode, newWhere)
   }
 
   def innerJoin[T2 <: Table, A](f: T1 => Association[T1, T2, A]) = {
@@ -22,13 +22,13 @@ class Query[T1 <: Table](
     val newSource = (source, association.right)
     val newJoin = queries.Builder.buildJoin(None, association)
 
-    new Query2(newSource, select, newJoin, where)
+    new Query2(newSource, selectNode, newJoin, whereNode)
   }
 
-  def toSql() = new QueryBuilder(select, join, where).toSql
+  def toSql() = new QueryBuilder(selectNode, joinNode, whereNode).toSql
 
   def result = {
-    val sql = new QueryBuilder(select, join, where).toSql
+    val sql = new QueryBuilder(selectNode, joinNode, whereNode).toSql
     val rs = Database.connection.execute(sql)
 
     Mapping.map(source, rs)

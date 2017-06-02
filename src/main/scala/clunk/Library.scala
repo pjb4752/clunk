@@ -114,8 +114,8 @@ object Library extends App {
     innerJoin({ case (u, r) => u.address }).
     innerJoin({ case (u, r, a) => u.orders }).
     innerJoin({ case (u, r, a, o) => o.items }).
-    filter({ case (u, r, a, o, i) => u.name.isEqualTo("Pat") }).
-    filter({ case (u, r, a, o, i) => a.state.isEqualTo("PA") })
+    where({ case (u, r, a, o, i) => u.name.isEqualTo("Pat") }).
+    where({ case (u, r, a, o, i) => a.state.isEqualTo("PA") })
 
   println(query.toSql)
   val result: List[(User, Role, Address, Order, Item)] = query.result
