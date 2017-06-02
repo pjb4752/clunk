@@ -4,24 +4,30 @@ import clunk.Builder._
 import clunk.jdbc.Database
 
 object Library extends App {
-  case class User(id: Int, name: String, addressId: Int)
+  case class User(id: Int, name: String, email: String, addressId: Int)
   case class Role(id: Int, name: String, userId: Int)
-  case class Address(id: Int, street: String, city: String, state: String)
+  case class Address(id: Int, street1: String, street2: String, aptNum: Int,
+    city: String, state: String, country: String)
+  case class Order(id: Int, userId: Int)
+  case class Item(id: Int, price: Int, quantity: Int, orderId: Int)
 
   object UserTable extends Table("users") {
     type Record = User
 
     val id = column[Int]("id")
     val name = column[String]("name")
+    val email = column[String]("email")
     val addressId = column[Int]("address_id")
 
     val roles = oneToMany(RoleTable, id, RoleTable.userId)
     val address = oneToOne(AddressTable, addressId, AddressTable.id)
+    val orders = oneToMany(OrderTable, id, OrderTable.userId)
 
     val converter = projectionMapping(
       (
         id,
         name,
+        email,
         addressId),
       User.tupled)
   }
@@ -47,29 +53,71 @@ object Library extends App {
     type Record = Address
 
     val id = column[Int]("id")
-    val street = column[String]("street")
+    val street1 = column[String]("street1")
+    val street2 = column[String]("street2")
+    val aptNum = column[Int]("apt_num")
     val city = column[String]("city")
     val state = column[String]("state")
+    val country = column[String]("country")
 
     val user = oneToOne(UserTable, UserTable.addressId, id)
 
     val converter = projectionMapping(
       (
         id,
-        street,
+        street1,
+        street2,
+        aptNum,
         city,
-        state),
+        state,
+        country),
       Address.tupled)
+  }
+
+  object OrderTable extends Table("orders") {
+    type Record = Order
+
+    val id = column[Int]("id")
+    val userId = column[Int]("user_id")
+
+    val user = manyToOne(UserTable, UserTable.id, userId)
+    val items = oneToMany(ItemTable, id, ItemTable.orderId)
+
+    val converter = projectionMapping(
+      (
+        id,
+        userId),
+      Order.tupled)
+  }
+
+  object ItemTable extends Table("items") {
+    type Record = Item
+
+    val id = column[Int]("id")
+    val price = column[Int]("price")
+    val quantity = column[Int]("quantity")
+    val orderId = column[Int]("order_id")
+
+    val order = manyToOne(OrderTable, OrderTable.id, orderId)
+
+    val converter = projectionMapping(
+      (
+        id,
+        price,
+        quantity,
+        orderId),
+      Item.tupled)
   }
 
   val query = Query(UserTable).
     innerJoin(_.roles).
     innerJoin({ case (u, r) => u.address }).
-    filter({ case (u, r, a) => u.name.isEqualTo("Pat") }).
-    filter({ case (u, r, a) => r.name.isEqualTo("admin") }).
-    filter({ case (u, r, a) => a.state.isEqualTo("PA") })
+    innerJoin({ case (u, r, a) => u.orders }).
+    innerJoin({ case (u, r, a, o) => o.items }).
+    filter({ case (u, r, a, o, i) => u.name.isEqualTo("Pat") }).
+    filter({ case (u, r, a, o, i) => a.state.isEqualTo("PA") })
 
   println(query.toSql)
-  val result: List[(User, Role, Address)] = query.result
+  val result: List[(User, Role, Address, Order, Item)] = query.result
   println(result)
 }
