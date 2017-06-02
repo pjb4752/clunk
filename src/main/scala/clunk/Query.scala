@@ -3,7 +3,6 @@ package clunk
 import clunk.Ast.Node._
 import clunk.Ast.Node.Comparator._
 import clunk.jdbc.Database
-import clunk.mappers.ResultSetMapper
 import clunk.queries.Query2
 import clunk.sql.QueryBuilder
 
@@ -32,7 +31,7 @@ class Query[T1 <: Table](
     val sql = new QueryBuilder(select, join, where).toSql
     val rs = Database.connection.execute(sql)
 
-    new ResultSetMapper(source).map(rs)
+    Mapping.map(source, rs)
   }
 }
 
