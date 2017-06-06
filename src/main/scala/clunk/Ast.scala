@@ -16,24 +16,24 @@ object Ast {
       case object MoreThan extends Comparator
     }
 
-    class Comparison[A](
+    class Comparison[A, B](
       val comparator: Comparator,
-      val column: Column[A],
-      val value: A)
+      val column: Column[A, B],
+      val value: B)
 
     case class TableSelectNode(
       val table: Table,
-      val columns: Seq[Column[_]]) extends Node
+      val columns: Seq[Column[_, _]]) extends Node
 
     case class TableJoinNode(
       val left: Table,
       val right: Table,
-      val fk: Column[_],
-      val pk: Column[_])
+      val fk: Column[_, _],
+      val pk: Column[_, _])
 
     case class TableWhereNode(
       val table: Table,
-      val comparisons: Seq[Comparison[_]]) extends Node
+      val comparisons: Seq[Comparison[_, _]]) extends Node
 
     case class SelectNode(val tableSelects: Seq[TableSelectNode]) extends Node
     case class JoinNode(val tableJoins: Seq[TableJoinNode]) extends Node

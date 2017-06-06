@@ -19,7 +19,7 @@ class WhereBuilder(where: Option[WhereNode]) {
   }
 
   private def buildComparisons(builder: StringBuilder,
-      comparisons: Seq[Comparison[_]]) = {
+      comparisons: Seq[Comparison[_, _]]) = {
 
     comparisons.map({ c =>
       val cmpBuilder = (buildComparison _)(c.column, c.value)
@@ -32,7 +32,7 @@ class WhereBuilder(where: Option[WhereNode]) {
     }).addString(builder, " AND ")
   }
 
-  private def buildComparison(c: Column[_], v: Any)(op: String) = {
+  private def buildComparison(c: Column[_, _], v: Any)(op: String) = {
     val value = c.typeTag match {
       case StrTag => s"'${v}'"
       case _      => s"${v}"

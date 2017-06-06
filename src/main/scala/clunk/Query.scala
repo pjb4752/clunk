@@ -12,7 +12,7 @@ class Query[T1 <: Table](
   val joinNode: Option[JoinNode],
   val whereNode: Option[WhereNode]) {
 
-  def where(f: T1 => Comparison[_]) = {
+  def where(f: T1 => Comparison[_, _]) = {
     val newWhere = queries.Builder.buildWhere(whereNode, f(source))
     new Query(source, selectNode, joinNode, newWhere)
   }

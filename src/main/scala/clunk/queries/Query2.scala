@@ -13,7 +13,7 @@ class Query2[T1 <: Table, T2 <: Table](
   val joinNode: Option[JoinNode],
   val whereNode: Option[WhereNode]) {
 
-  def where(f: Tuple2[T1, T2] => Comparison[_]) = {
+  def where(f: Tuple2[T1, T2] => Comparison[_, _]) = {
     val newWhere = Builder.buildWhere(whereNode, f(source))
     new Query2(source, selectNode, joinNode, newWhere)
   }

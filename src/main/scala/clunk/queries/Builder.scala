@@ -17,14 +17,14 @@ object Builder {
     Some(JoinNode(newJoins))
   }
 
-  def buildWhere(oldWhere: Option[WhereNode], comparison: Comparison[_]) = {
+  def buildWhere(oldWhere: Option[WhereNode], comparison: Comparison[_, _]) = {
     val table = comparison.column.table
 
     val maybeFilters = oldWhere.map(_.tableFilters)
     val maybeFilter = maybeFilters.flatMap(_.find(_.table == table))
 
     val prevComparisons = maybeFilter.map(_.comparisons).
-      getOrElse(Seq[Comparison[_]]())
+      getOrElse(Seq[Comparison[_, _]]())
     val newTableNode = TableWhereNode(table, prevComparisons :+ comparison)
 
     val tableNodes = maybeFilters.map(_.filterNot(_.table == table)).

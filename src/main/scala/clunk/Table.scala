@@ -6,7 +6,7 @@ import clunk.Ast.Node._
 abstract class Table(val srcName: String) extends TableLike {
   type Self = this.type
 
-  val columns = ArrayBuffer[Column[_]]()
+  val columns = ArrayBuffer[Column[_, _]]()
   val associations = ArrayBuffer[Association[Self, _, _]]()
   lazy val selectNode = TableSelectNode(this, columns.toSeq)
 
@@ -17,26 +17,20 @@ abstract class Table(val srcName: String) extends TableLike {
     targetColumn
   }
 
-  def oneToOne[T2 <: Table, A](target: T2, fk: Column[A], pk: Column[A]) =
+  def oneToOne[T2 <: Table, A](target: T2, fk: Column[_, A], pk: Column[_, A]) =
     makeAssociation[T2, A](target, fk, pk)
 
-  def oneToMany[T2 <: Table, A](target: T2, fk: Column[A], pk: Column[A]) =
+  def oneToMany[T2 <: Table, A](target: T2, fk: Column[_, A], pk: Column[_, A]) =
     makeAssociation[T2, A](target, fk, pk)
 
-  def manyToOne[T2 <: Table, A](target: T2, fk: Column[A], pk: Column[A]) =
+  def manyToOne[T2 <: Table, A](target: T2, fk: Column[_, A], pk: Column[_, A]) =
     makeAssociation[T2, A](target, fk, pk)
 
-  override def toString(): String = {
-    val builder = new StringBuilder(s"CREATE TABLE ${srcName} (\n")
+  override def toString(): String =
+    columns.map(_.toString()).
+      mkString(s"CREATE TABLE ${srcName} (\n", ",\n", ");")
 
-    columns.map({ c => c.typeTag match {
-        case TypeTag.IntTag => s"${c.srcName} INT NOT NULL"
-        case TypeTag.StrTag => s"${c.srcName} VARCHAR(255) NOT NULL"
-      }
-    }).addString(builder, ",\n").append(");").toString
-  }
-
-  private def makeAssociation[T2 <: Table, A](t: T2, fk: Column[A], pk: Column[A]) = {
+  private def makeAssociation[T2 <: Table, A](t: T2, fk: Column[_, A], pk: Column[_, A]) = {
     val association = new Association[Self, T2, A](this, t, fk, pk)
     associations += association
 

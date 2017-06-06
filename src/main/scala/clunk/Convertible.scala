@@ -5,5 +5,5 @@ import java.sql.ResultSet
 trait Convertible[A] {
   val arity: Int
 
-  def fromDb(rs: ResultSet, offset: Int): A
+  def fromDb(columns: Seq[Column[_, _]], rs: ResultSet, offset: Int): A
 }

@@ -6,8 +6,8 @@ import clunk.jdbc.Database
 object Library extends App {
   case class User(id: Int, name: String, email: String, addressId: Int)
   case class Role(id: Int, name: String, userId: Int)
-  case class Address(id: Int, street1: String, street2: String, aptNum: Int,
-    city: String, state: String, country: String)
+  case class Address(id: Int, street1: String, street2: Option[String],
+    aptNum: Option[Int], city: String, state: String, country: String)
   case class Order(id: Int, userId: Int)
   case class Item(id: Int, price: Int, quantity: Int, orderId: Int)
 
@@ -54,8 +54,8 @@ object Library extends App {
 
     val id = column[Int]("id")
     val street1 = column[String]("street1")
-    val street2 = column[String]("street2")
-    val aptNum = column[Int]("apt_num")
+    val street2 = column[Option[String]]("street2")
+    val aptNum = column[Option[Int]]("apt_num")
     val city = column[String]("city")
     val state = column[String]("state")
     val country = column[String]("country")

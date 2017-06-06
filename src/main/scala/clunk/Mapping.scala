@@ -4,7 +4,7 @@ import java.sql.ResultSet
 
 object Mapping {
 
-  def map[T1 <: Table](source: T1, rs: ResultSet) {
+  def map[T1 <: Table](source: T1, rs: ResultSet) = {
     var result = List[T1#Record]()
 
     while (rs.next()) {

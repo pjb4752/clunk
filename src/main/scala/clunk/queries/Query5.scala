@@ -12,7 +12,7 @@ class Query5[T1 <: Table, T2 <: Table, T3 <: Table, T4 <: Table, T5 <: Table](
   val joinNode: Option[JoinNode],
   val whereNode: Option[WhereNode]) {
 
-  def where(f: Tuple5[T1, T2, T3, T4, T5] => Comparison[_]) = {
+  def where(f: Tuple5[T1, T2, T3, T4, T5] => Comparison[_, _]) = {
     val newWhere = Builder.buildWhere(whereNode, f(source))
     new Query5(source, selectNode, joinNode, newWhere)
   }

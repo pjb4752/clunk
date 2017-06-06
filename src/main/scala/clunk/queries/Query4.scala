@@ -13,7 +13,7 @@ class Query4[T1 <: Table, T2 <: Table, T3 <: Table, T4 <: Table](
   val joinNode: Option[JoinNode],
   val whereNode: Option[WhereNode]) {
 
-  def where(f: Tuple4[T1, T2, T3, T4] => Comparison[_]) = {
+  def where(f: Tuple4[T1, T2, T3, T4] => Comparison[_, _]) = {
     val newWhere = Builder.buildWhere(whereNode, f(source))
     new Query4(source, selectNode, joinNode, newWhere)
   }
