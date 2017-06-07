@@ -11,6 +11,10 @@ class WhereBuilder(where: Option[WhereNode]) {
     where.map({ w => buildFilters(builder, w.tableFilters) }).
       getOrElse(builder)
 
+  def toParams = where.map({ w =>
+      w.tableFilters.flatMap(_.comparisons)
+    }).getOrElse(Seq[Comparison[_, _]]())
+
   private def buildFilters(builder: StringBuilder,
       filters: Seq[TableWhereNode]) = {
 
@@ -33,11 +37,6 @@ class WhereBuilder(where: Option[WhereNode]) {
   }
 
   private def buildComparison(c: Column[_, _], v: Any)(op: String) = {
-    val value = c.typeTag match {
-      case StrTag => s"'${v}'"
-      case _      => s"${v}"
-    }
-
-    s"`${c.table.srcName}`.`${c.srcName}` ${op} ${value}"
+    s"`${c.table.srcName}`.`${c.srcName}` ${op} ?"
   }
 }

@@ -18,6 +18,8 @@ class QueryBuilder(
       andThen(buildWhere)(new StringBuilder).
       toString
 
+  def toParams() = whereBuilder.toParams
+
   private def buildSelect(builder: StringBuilder) =
     selectBuilder.toSql(builder)
 

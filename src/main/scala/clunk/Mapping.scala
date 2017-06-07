@@ -4,7 +4,7 @@ import java.sql.ResultSet
 
 object Mapping {
 
-  def map[T1 <: Table](source: T1, rs: ResultSet) = {
+  def map[T1 <: Table](source: T1)(rs: ResultSet) = {
     var result = List[T1#Record]()
 
     while (rs.next()) {
@@ -14,7 +14,7 @@ object Mapping {
     result.reverse
   }
 
-  def map2[T1 <: Table, T2 <: Table](source: Tuple2[T1, T2], rs: ResultSet) = {
+  def map2[T1 <: Table, T2 <: Table](source: Tuple2[T1, T2])(rs: ResultSet) = {
     var result = List[Tuple2[T1#Record, T2#Record]]()
     val (table1, table2) = source
 
@@ -31,7 +31,7 @@ object Mapping {
   }
 
   def map3[T1 <: Table, T2 <: Table, T3 <: Table]
-      (source: Tuple3[T1, T2, T3], rs: ResultSet) = {
+      (source: Tuple3[T1, T2, T3])(rs: ResultSet) = {
     var result = List[Tuple3[T1#Record, T2#Record, T3#Record]]()
     val (table1, table2, table3) = source
 
@@ -50,7 +50,7 @@ object Mapping {
   }
 
   def map4[T1 <: Table, T2 <: Table, T3 <: Table, T4 <: Table]
-      (source: Tuple4[T1, T2, T3, T4], rs: ResultSet) = {
+      (source: Tuple4[T1, T2, T3, T4])(rs: ResultSet) = {
     var result = List[Tuple4[T1#Record, T2#Record, T3#Record, T4#Record]]()
     val (table1, table2, table3, table4) = source
 
@@ -71,7 +71,7 @@ object Mapping {
   }
 
   def map5[T1 <: Table, T2 <: Table, T3 <: Table, T4 <: Table, T5 <: Table]
-      (source: Tuple5[T1, T2, T3, T4, T5], rs: ResultSet) = {
+      (source: Tuple5[T1, T2, T3, T4, T5])(rs: ResultSet) = {
     var result = List[Tuple5[T1#Record, T2#Record, T3#Record, T4#Record, T5#Record]]()
     val (table1, table2, table3, table4, table5) = source
 

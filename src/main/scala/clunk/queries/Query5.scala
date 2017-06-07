@@ -20,9 +20,9 @@ class Query5[T1 <: Table, T2 <: Table, T3 <: Table, T4 <: Table, T5 <: Table](
   def toSql() = new QueryBuilder(selectNode, joinNode, whereNode).toSql
 
   def result = {
-    val sql = new QueryBuilder(selectNode, joinNode, whereNode).toSql
-    val rs = Database.connection.execute(sql)
+    val builder = new QueryBuilder(selectNode, joinNode, whereNode)
+    val mapFn = (Mapping.map5(source) _)
 
-    Mapping.map5(source, rs)
+    Database.connection(_.query(builder.toSql, builder.toParams, mapFn))
   }
 }

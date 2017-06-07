@@ -31,9 +31,9 @@ class Query3[T1 <: Table, T2 <: Table, T3 <: Table](
   def toSql() = new QueryBuilder(selectNode, joinNode, whereNode).toSql
 
   def result = {
-    val sql = new QueryBuilder(selectNode, joinNode, whereNode).toSql
-    val rs = Database.connection.execute(sql)
+    val builder = new QueryBuilder(selectNode, joinNode, whereNode)
+    val mapFn = (Mapping.map3(source) _)
 
-    Mapping.map3(source, rs)
+    Database.connection(_.query(builder.toSql, builder.toParams, mapFn))
   }
 }

@@ -13,9 +13,19 @@ object Database {
 
   val _ = Class.forName("com.mysql.cj.jdbc.Driver")
 
-  def connection() = {
+  def connection = {
     val underlying = DriverManager.getConnection(url, user, password)
     new Connection(underlying)
+  }
+
+  def connection[A](fn: Connection => A): A = {
+    val underlying = DriverManager.getConnection(url, user, password)
+
+    try {
+      fn(new Connection(underlying))
+    } finally {
+      underlying.close()
+    }
   }
 
   lazy val url = base + options.map({ case (k, v) => s"${k}=${v}" }).

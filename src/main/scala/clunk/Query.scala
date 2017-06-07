@@ -28,10 +28,10 @@ class Query[T1 <: Table](
   def toSql() = new QueryBuilder(selectNode, joinNode, whereNode).toSql
 
   def result = {
-    val sql = new QueryBuilder(selectNode, joinNode, whereNode).toSql
-    val rs = Database.connection.execute(sql)
+    val builder = new QueryBuilder(selectNode, joinNode, whereNode)
+    val mapFn = (Mapping.map(source) _)
 
-    Mapping.map(source, rs)
+    Database.connection(_.query(builder.toSql, builder.toParams, mapFn))
   }
 }
 
