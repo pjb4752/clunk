@@ -4,17 +4,17 @@ import clunk.Builder._
 import clunk.jdbc.Database
 
 object Library extends App {
-  case class User(id: Int, name: String, email: String, addressId: Int)
-  case class Role(id: Int, name: String, userId: Int)
-  case class Address(id: Int, street1: String, street2: Option[String],
+  case class User(id: Option[Int], name: String, email: String, addressId: Int)
+  case class Role(id: Option[Int], name: String, userId: Int)
+  case class Address(id: Option[Int], street1: String, street2: Option[String],
     aptNum: Option[Int], city: String, state: String, country: String)
-  case class Order(id: Int, userId: Int)
-  case class Item(id: Int, price: Int, quantity: Int, orderId: Int)
+  case class Order(id: Option[Int], userId: Int)
+  case class Item(id: Option[Int], price: Int, quantity: Int, orderId: Int)
 
   object UserTable extends Table("users") {
     type Record = User
 
-    val id = column[Int]("id")
+    val id = column[Option[Int]]("id", ColumnFlag.AutoGen)
     val name = column[String]("name")
     val email = column[String]("email")
     val addressId = column[Int]("address_id")
@@ -35,7 +35,7 @@ object Library extends App {
   object RoleTable extends Table("roles") {
     type Record = Role
 
-    val id = column[Int]("id")
+    val id = column[Option[Int]]("id", ColumnFlag.AutoGen)
     val name = column[String]("name")
     val userId = column[Int]("user_id")
 
@@ -52,7 +52,7 @@ object Library extends App {
   object AddressTable extends Table("addresses") {
     type Record = Address
 
-    val id = column[Int]("id")
+    val id = column[Option[Int]]("id", ColumnFlag.AutoGen)
     val street1 = column[String]("street1")
     val street2 = column[Option[String]]("street2")
     val aptNum = column[Option[Int]]("apt_num")
@@ -77,7 +77,7 @@ object Library extends App {
   object OrderTable extends Table("orders") {
     type Record = Order
 
-    val id = column[Int]("id")
+    val id = column[Option[Int]]("id", ColumnFlag.AutoGen)
     val userId = column[Int]("user_id")
 
     val user = manyToOne(UserTable, UserTable.id, userId)
@@ -93,7 +93,7 @@ object Library extends App {
   object ItemTable extends Table("items") {
     type Record = Item
 
-    val id = column[Int]("id")
+    val id = column[Option[Int]]("id", ColumnFlag.AutoGen)
     val price = column[Int]("price")
     val quantity = column[Int]("quantity")
     val orderId = column[Int]("order_id")
@@ -109,8 +109,8 @@ object Library extends App {
       Item.tupled, Item.unapply _)
   }
 
-  //val item = Item(3, 1000, 9, 1)
-  //val insert = Insert(ItemTable)
+  val item = Item(None, 1000, 9, 1)
+  val insert = Insert(ItemTable)
 
   insert.execute(item)
 

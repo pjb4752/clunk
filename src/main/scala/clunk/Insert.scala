@@ -13,9 +13,11 @@ class Insert[T1 <: Table](val source: T1) {
   }
 
   private def insertSql = {
-    val baseSql = source.columns.map(_.srcName).
+    val nonAutoColumns = source.columns.filterNot(_.isAutoGen)
+
+    val baseSql = nonAutoColumns.map(_.srcName).
       mkString(s"INSERT INTO `${source.srcName}` (", ", ", ")")
-    val bindSql = source.columns.map({ c => "?" }).
+    val bindSql = nonAutoColumns.map({ c => "?" }).
       mkString(" VALUES (", ", ", ")")
 
     baseSql + bindSql

@@ -4,7 +4,8 @@ import clunk.Ast.Node._
 import clunk.Ast.Node.Comparator._
 
 class Column[A, B](val typeTag: TypeTag, val table: Table,
-    val srcName: String, val isNullable: Boolean = false)
+    val srcName: String, val isNullable: Boolean = false,
+    val isAutoGen: Boolean = false)
   extends ColumnLike[A] {
 
   def isEqualTo(value: B) = makeComparison(EqualTo, value)
@@ -23,4 +24,10 @@ class Column[A, B](val typeTag: TypeTag, val table: Table,
   }
 
   private def nullValue = if (isNullable) "" else "NOT NULL"
+}
+
+sealed trait ColumnFlag
+
+object ColumnFlag {
+  object AutoGen extends ColumnFlag
 }

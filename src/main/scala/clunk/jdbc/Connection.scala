@@ -32,10 +32,16 @@ class Connection(underlying: JavaConn) {
       val statement = underlying.prepareStatement(sql)
       val stmtBindParam = (bindParam _)(statement)
       var rowsAffected = 0
+      var current = 1
 
       try {
-        stmtBindParam(columns(0), tuple._1, 1)
-        stmtBindParam(columns(1), tuple._2, 2)
+        if (!columns(0).isAutoGen) {
+          stmtBindParam(columns(0), tuple._1, current)
+          current += 1
+        }
+        if (!columns(current).isAutoGen) {
+          stmtBindParam(columns(1), tuple._2, current)
+        }
         rowsAffected = statement.executeUpdate()
       } finally {
         statement.close()
@@ -50,11 +56,20 @@ class Connection(underlying: JavaConn) {
       val statement = underlying.prepareStatement(sql)
       val stmtBindParam = (bindParam _)(statement)
       var rowsAffected = 0
+      var current = 0
 
       try {
-        stmtBindParam(columns(0), tuple._1, 1)
-        stmtBindParam(columns(1), tuple._2, 2)
-        stmtBindParam(columns(2), tuple._3, 3)
+        if (!columns(0).isAutoGen) {
+          stmtBindParam(columns(0), tuple._1, current)
+          current += 1
+        }
+        if (!columns(1).isAutoGen) {
+          stmtBindParam(columns(1), tuple._2, current)
+          current += 1
+        }
+        if (!columns(2).isAutoGen) {
+          stmtBindParam(columns(2), tuple._3, current)
+        }
         rowsAffected = statement.executeUpdate()
       } finally {
         statement.close()
@@ -69,12 +84,24 @@ class Connection(underlying: JavaConn) {
       val statement = underlying.prepareStatement(sql)
       val stmtBindParam = (bindParam _)(statement)
       var rowsAffected = 0
+      var current = 1
 
       try {
-        stmtBindParam(columns(0), tuple._1, 1)
-        stmtBindParam(columns(1), tuple._2, 2)
-        stmtBindParam(columns(2), tuple._3, 3)
-        stmtBindParam(columns(3), tuple._4, 4)
+        if (!columns(0).isAutoGen) {
+          stmtBindParam(columns(0), tuple._1, current)
+          current += 1
+        }
+        if (!columns(1).isAutoGen) {
+          stmtBindParam(columns(1), tuple._2, current)
+          current += 1
+        }
+        if (!columns(2).isAutoGen) {
+          stmtBindParam(columns(2), tuple._3, current)
+          current += 1
+        }
+        if (!columns(3).isAutoGen) {
+          stmtBindParam(columns(3), tuple._4, current)
+        }
         rowsAffected = statement.executeUpdate()
       } finally {
         statement.close()
