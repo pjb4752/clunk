@@ -29,7 +29,7 @@ object Library extends App {
         name,
         email,
         addressId),
-      User.tupled)
+      User.tupled, User.unapply _)
   }
 
   object RoleTable extends Table("roles") {
@@ -46,7 +46,7 @@ object Library extends App {
         id,
         name,
         userId),
-      Role.tupled)
+      Role.tupled, Role.unapply _)
   }
 
   object AddressTable extends Table("addresses") {
@@ -71,7 +71,7 @@ object Library extends App {
         city,
         state,
         country),
-      Address.tupled)
+      Address.tupled, Address.unapply _)
   }
 
   object OrderTable extends Table("orders") {
@@ -87,7 +87,7 @@ object Library extends App {
       (
         id,
         userId),
-      Order.tupled)
+      Order.tupled, Order.unapply _)
   }
 
   object ItemTable extends Table("items") {
@@ -106,8 +106,13 @@ object Library extends App {
         price,
         quantity,
         orderId),
-      Item.tupled)
+      Item.tupled, Item.unapply _)
   }
+
+  //val item = Item(3, 1000, 9, 1)
+  //val insert = Insert(ItemTable)
+
+  insert.execute(item)
 
   val query = Query(UserTable).
     innerJoin(_.roles).
