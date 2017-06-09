@@ -27,6 +27,8 @@ abstract class Table(val srcName: String) extends TableLike {
   def manyToOne[T2 <: Table, A](target: T2, fk: Column[_, A], pk: Column[_, A]) =
     makeAssociation[T2, A](target, fk, pk)
 
+  def primaryKey(columns: Column[_, _]*) = columns.toSeq
+
   override def toString() = columns.map(_.toString()).
       mkString(s"CREATE TABLE ${srcName} (\n", ",\n", ");")
 

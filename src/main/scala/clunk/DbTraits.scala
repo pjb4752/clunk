@@ -26,6 +26,7 @@ trait TableLike extends Nameable {
   type Record
 
   val columns: ArrayBuffer[Column[_, _]]
+  val primaryKeys: Seq[Column[_, _]]
   val converter: Convertible[Record]
 
   def projectionMapping[A, B]
