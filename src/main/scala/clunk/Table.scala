@@ -10,8 +10,9 @@ abstract class Table(val srcName: String) extends TableLike {
   val associations = ArrayBuffer[Association[Self, _, _]]()
   lazy val selectNode = TableSelectNode(this, columns.toSeq)
 
-  def column[A](name: String)(implicit t: ColumnBuilder[A]) = {
-    val targetColumn = t.build(this, name)
+  def column[A](name: String, flags: ColumnFlag*)
+      (implicit t: ColumnBuilder[A]) = {
+    val targetColumn = t.build(this, name, flags.toSeq)
     columns += targetColumn
 
     targetColumn
@@ -26,8 +27,7 @@ abstract class Table(val srcName: String) extends TableLike {
   def manyToOne[T2 <: Table, A](target: T2, fk: Column[_, A], pk: Column[_, A]) =
     makeAssociation[T2, A](target, fk, pk)
 
-  override def toString(): String =
-    columns.map(_.toString()).
+  override def toString() = columns.map(_.toString()).
       mkString(s"CREATE TABLE ${srcName} (\n", ",\n", ");")
 
   private def makeAssociation[T2 <: Table, A](t: T2, fk: Column[_, A], pk: Column[_, A]) = {

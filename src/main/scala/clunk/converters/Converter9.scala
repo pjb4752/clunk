@@ -3,10 +3,13 @@ package clunk.converters
 import clunk.{Column, Convertible}
 import java.sql.ResultSet
 
-class Converter9[A, B, C, D, E, F, G, H, I, Record]
-    (val t: Tuple9[A, B, C, D, E, F, G, H, I] => Record)
+class Converter9[A, B, C, D, E, F, G, H, I, Record](
+    t: Tuple9[A, B, C, D, E, F, G, H, I] => Record,
+    r: Record => Option[Tuple9[A, B, C, D, E, F, G, H, I]])
     extends Convertible[Record] {
 
+  type Unwrapped = Tuple9[A, B, C, D, E, F, G, H, I]
+  type Unapplied = Option[Unwrapped]
   val arity = 8
 
   def fromDb(columns: Seq[Column[_, _]], rs: ResultSet, offset: Int) = {
@@ -19,7 +22,9 @@ class Converter9[A, B, C, D, E, F, G, H, I, Record]
     val t7 = Conversion.getValue[G](columns(6), rs, offset + 7)
     val t8 = Conversion.getValue[H](columns(7), rs, offset + 8)
     val t9 = Conversion.getValue[I](columns(8), rs, offset + 9)
-    val tuple = Tuple9[A, B, C, D, E, F, G, H, I](t1, t2, t3, t4, t5, t6, t7, t8, t9)
+    val tuple = (t1, t2, t3, t4, t5, t6, t7, t8, t9)
     t(tuple)
   }
+
+  def toDb(record: Record) = r(record)
 }

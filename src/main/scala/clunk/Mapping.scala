@@ -4,6 +4,9 @@ import java.sql.ResultSet
 
 object Mapping {
 
+  def unmap(source: Table)(record: source.Record) =
+    source.toDb(record).asInstanceOf[Option[Product]]
+
   def map[T1 <: Table](source: T1)(rs: ResultSet) = {
     var result = List[T1#Record]()
 
