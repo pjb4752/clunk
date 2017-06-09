@@ -26,81 +26,20 @@ class Connection(underlying: JavaConn) {
     }
   }
 
-  def insert2[A, B](sql: String, columns: Seq[Column[_, _]],
-      values: Option[Tuple2[A, B]]) = {
+  def insert(sql: String, columns: Seq[Column[_, _]],
+      values: Option[Product]) = {
     values.map({ tuple =>
       val statement = underlying.prepareStatement(sql)
-      val stmtBindParam = (bindParam _)(statement)
       var rowsAffected = 0
-      var current = 1
 
       try {
-        if (!columns(0).isAutoGen) {
-          stmtBindParam(columns(0), tuple._1, current)
-          current += 1
-        }
-        if (!columns(current).isAutoGen) {
-          stmtBindParam(columns(1), tuple._2, current)
-        }
-        rowsAffected = statement.executeUpdate()
-      } finally {
-        statement.close()
-      }
-      rowsAffected
-    }).getOrElse(0)
-  }
-
-  def insert3[A, B, C](sql: String, columns: Seq[Column[_, _]],
-      values: Option[Tuple3[A, B, C]]) = {
-    values.map({ tuple =>
-      val statement = underlying.prepareStatement(sql)
-      val stmtBindParam = (bindParam _)(statement)
-      var rowsAffected = 0
-      var current = 0
-
-      try {
-        if (!columns(0).isAutoGen) {
-          stmtBindParam(columns(0), tuple._1, current)
-          current += 1
-        }
-        if (!columns(1).isAutoGen) {
-          stmtBindParam(columns(1), tuple._2, current)
-          current += 1
-        }
-        if (!columns(2).isAutoGen) {
-          stmtBindParam(columns(2), tuple._3, current)
-        }
-        rowsAffected = statement.executeUpdate()
-      } finally {
-        statement.close()
-      }
-      rowsAffected
-    }).getOrElse(0)
-  }
-
-  def insert4[A, B, C, D](sql: String, columns: Seq[Column[_, _]],
-      values: Option[Tuple4[A, B, C, D]]) = {
-    values.map({ tuple =>
-      val statement = underlying.prepareStatement(sql)
-      val stmtBindParam = (bindParam _)(statement)
-      var rowsAffected = 0
-      var current = 1
-
-      try {
-        if (!columns(0).isAutoGen) {
-          stmtBindParam(columns(0), tuple._1, current)
-          current += 1
-        }
-        if (!columns(1).isAutoGen) {
-          stmtBindParam(columns(1), tuple._2, current)
-          current += 1
-        }
-        if (!columns(2).isAutoGen) {
-          stmtBindParam(columns(2), tuple._3, current)
-          current += 1
-        }
-        if (!columns(3).isAutoGen) {
-          stmtBindParam(columns(3), tuple._4, current)
+        val stmtBindParam = (bindParam _)(statement)
+        var current = 1
+        for ((f, i) <- columns.view.zipWithIndex) {
+          if (!columns(i).isAutoGen) {
+            stmtBindParam(columns(i), tuple.productElement(i), current)
+            current += 1
+          }
         }
         rowsAffected = statement.executeUpdate()
       } finally {

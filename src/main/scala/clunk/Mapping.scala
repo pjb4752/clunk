@@ -4,14 +4,8 @@ import java.sql.ResultSet
 
 object Mapping {
 
-  def unmap2[A, B](source: Table)(record: source.Record) =
-    source.toDb(record).asInstanceOf[Option[Tuple2[A, B]]]
-
-  def unmap3[A, B, C](source: Table)(record: source.Record) =
-    source.toDb(record).asInstanceOf[Option[Tuple3[A, B, C]]]
-
-  def unmap4[A, B, C, D](source: Table)(record: source.Record) =
-    source.toDb(record).asInstanceOf[Option[Tuple4[A, B, C, D]]]
+  def unmap(source: Table)(record: source.Record) =
+    source.toDb(record).asInstanceOf[Option[Product]]
 
   def map[T1 <: Table](source: T1)(rs: ResultSet) = {
     var result = List[T1#Record]()
