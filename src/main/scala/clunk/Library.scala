@@ -28,8 +28,7 @@ object Library extends App {
         id,
         name,
         email,
-        addressId),
-      User.tupled, User.unapply _)
+        addressId))(User.tupled)(User.unapply)
   }
 
   object RoleTable extends Table("roles") {
@@ -45,8 +44,7 @@ object Library extends App {
       (
         id,
         name,
-        userId),
-      Role.tupled, Role.unapply _)
+        userId))(Role.tupled)(Role.unapply)
   }
 
   object AddressTable extends Table("addresses") {
@@ -70,8 +68,7 @@ object Library extends App {
         aptNum,
         city,
         state,
-        country),
-      Address.tupled, Address.unapply _)
+        country))(Address.tupled)(Address.unapply)
   }
 
   object OrderTable extends Table("orders") {
@@ -86,8 +83,7 @@ object Library extends App {
     val converter = projectionMapping(
       (
         id,
-        userId),
-      Order.tupled, Order.unapply _)
+        userId))(Order.tupled)(Order.unapply)
   }
 
   object ItemTable extends Table("items") {
@@ -105,8 +101,7 @@ object Library extends App {
         id,
         price,
         quantity,
-        orderId),
-      Item.tupled, Item.unapply _)
+        orderId))(Item.tupled)(Item.unapply)
   }
 
   val item = Item(None, 1000, 9, 1)
