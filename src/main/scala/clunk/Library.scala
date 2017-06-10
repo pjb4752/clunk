@@ -113,23 +113,31 @@ object Library extends App {
         orderId))(Item.tupled)(Item.unapply)
   }
 
-  val item = Item(None, 1000, 9, 1)
-  val insert = Insert(ItemTable)
+  val userQuery = Query(UserTable)
+  val roleQuery = Query(RoleTable)
+  val addressQuery = Query(AddressTable)
+  val orderQuery = Query(OrderTable)
+  val itemQuery = Query(ItemTable)
 
-  insert.execute(item)
+  val order = orderQuery.result.headOption
 
-  val userQuery = Query(UserTable).where(_.name.isEqualTo("Pat"))
-  val user = userQuery.result.headOption
+  val itemsInserted = order.map({ o =>
+    val item = Item(None, 1000, 9, 1)
+    itemQuery.insert(item)
+  }).getOrElse(0)
+
+  println("# of items inserted = " + itemsInserted)
+
+  val user = userQuery.where(_.name.isEqualTo("Pat")).result.headOption
 
   val usersUpdated = user.map({ u =>
-    val update = Update(UserTable)
     val changedUser = u.copy(loginCount = u.loginCount+1)
-    update.execute(changedUser)
+    userQuery.update(changedUser)
   }).getOrElse(0)
 
   println("# of users updated = " + usersUpdated)
 
-  val query = Query(UserTable).
+  val bigQuery = userQuery.
     innerJoin(_.roles).
     innerJoin({ case (u, r) => u.address }).
     innerJoin({ case (u, r, a) => u.orders }).
@@ -137,7 +145,7 @@ object Library extends App {
     where({ case (u, r, a, o, i) => u.name.isEqualTo("Pat") }).
     where({ case (u, r, a, o, i) => a.state.isEqualTo("PA") })
 
-  println(query.toSql)
-  val result: List[(User, Role, Address, Order, Item)] = query.result
+  println(bigQuery.toSql)
+  val result: List[(User, Role, Address, Order, Item)] = bigQuery.result
   println(result)
 }
